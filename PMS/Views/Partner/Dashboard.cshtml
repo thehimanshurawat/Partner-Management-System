@@ -1,0 +1,135 @@
+﻿<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<div class="flex flex-col md:flex-row h-screen">
+    <!-- Sidebar -->
+    <aside class="w-full md:w-64 bg-white shadow-md fixed top-0 left-0 h-full pt-16" style="width:300px;">
+        <div class="p-4 text-center text-xl font-bold text-indigo-600">
+            Partner Dashboard
+        </div>
+        <nav class="flex flex-col">
+            <a href="@Url.Action("Dashboard", "Partner")" class="block px-6 py-3 text-gray-700 hover:bg-gray-200">🏠 Dashboard</a>
+            <a href="@Url.Action("CreateOffer", "Partner")" class="block px-6 py-3 text-gray-700 hover:bg-gray-200">➕ Create Offer</a>
+            <a href="#" class="block px-6 py-3 text-gray-700 hover:bg-gray-200" onclick="showTable('all')">
+                📋 All Offers 
+            </a>
+            <a href="#" class="block px-6 py-3 text-gray-700 hover:bg-gray-200" onclick="showTable('approved')">
+                ✔️ Approved Offers
+            </a>
+            <a href="#" class="block px-6 py-3 text-gray-700 hover:bg-gray-200" onclick="showTable('pending')">
+                ⏳ Pending Offers 
+            </a>
+            <a href="#" class="block px-6 py-3 text-gray-700 hover:bg-gray-200" onclick="showTable('rejected')">
+                ❌ Rejected Offers
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-6 ml-64" style="margin-left:150px;position:absolute; top:50px; width:80%;">
+        <h1 class="text-3xl font-bold mb-6">Welcome, @User.Identity.Name 👋</h1>
+
+        <!-- Quick Actions -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            <a href="@Url.Action("CreateOffer", "Partner")" class="p-2 bg-indigo-600 text-white rounded-lg shadow-md text-center hover:bg-indigo-500">➕ Create Offer</a>
+            <a href="#" class="p-2 bg-gray-500 text-white rounded-lg shadow-md text-center hover:bg-gray-400" onclick="showTable('all')">
+                📋 All Offers
+            </a>
+            <a href="#" class="p-2 bg-green-500 text-white rounded-lg shadow-md text-center hover:bg-green-400" onclick="showTable('approved')">
+                ✔️ Approved
+            </a>
+            <a href="#" class="p-2 bg-yellow-500 text-white rounded-lg shadow-md text-center hover:bg-yellow-400" onclick="showTable('pending')">
+                ⏳ Pending
+            </a>
+            <a href="#" class="p-2 bg-red-500 text-white rounded-lg shadow-md text-center hover:bg-red-400" onclick="showTable('rejected')">
+                ❌ Rejected
+            </a>
+        </div>
+
+        <!-- List of Created Offers -->
+        <h2 class="text-2xl font-semibold mt-8 mb-4">Your Offers</h2>
+        <div class="overflow-x-auto">
+            <table id="offersTable" class="w-full bg-white shadow-md rounded-lg">
+                <thead>
+                    <tr class="bg-indigo-600 text-white">
+                        <th class="p-3 text-left">Offer Name</th>
+                        <th class="p-3 text-left">Description</th>
+                        <th class="p-3 text-left">Start Date</th>
+                        <th class="p-3 text-left">End Date</th>
+                        <th class="p-3 text-left">Cost (₹)</th>
+                        <th class="p-3 text-left">Status</th>
+                        <th class="p-3 text-left">Message</th>
+                        <th class="p-3 text-left" style="width:102px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="offersTableBody">
+                    @foreach (var offer in Model)
+                    {
+                        <tr class="border-b offer-row" data-status="@offer.Status.ToString().ToLower()">
+                            <td class="p-3">@offer.OfferName</td>
+                            <td class="p-3">@offer.Description</td>
+                            <td class="p-3">@offer.StartDate.ToShortDateString()</td>
+                            <td class="p-3">@offer.EndDate.ToShortDateString()</td>
+                            <td class="p-3 font-semibold text-gray-800">₹@offer.Cost</td>
+                            <td class="p-3">
+                                @if (offer.Status == PMS.Models.OfferStatus.Approved)
+                                {
+                                    <span class="px-3 py-1 text-sm font-semibold rounded-lg bg-green-500 text-white">Approved</span>
+                                }
+                                else if (offer.Status == PMS.Models.OfferStatus.Pending)
+                                {
+                                    <span class="px-3 py-1 text-sm font-semibold rounded-lg bg-yellow-500 text-white">Pending</span>
+                                }
+                                else if (offer.Status == PMS.Models.OfferStatus.Rejected)
+                                {
+                                    <span class="px-3 py-1 text-sm font-semibold rounded-lg bg-red-500 text-white">Rejected</span>
+                                }
+                            </td>
+                            <td class="p-3 text-gray-700">@offer.Message</td>
+                            <td class="p-3">
+                                @if (offer.Status != PMS.Models.OfferStatus.Approved) // Allow edit for Pending & Rejected offers
+                                {
+                                    <a href="@Url.Action("EditOffer", "Partner", new { id = offer.OfferId })"
+                                       class=" px-2 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-500">
+                                        ✏️ Edit
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span class="text-gray-500">—</span> <!-- No edit button for approved offers -->
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+
+<!-- Script to Update Counts & Filter Tables -->
+<script>
+    function updateDashboardCounts() {
+        $.get("/Partner/GetOfferCounts", function (data) {
+            $("#allCount").text(data.all || 0);
+            $("#approvedCount").text(data.approved || 0);
+            $("#pendingCount").text(data.pending || 0);
+            $("#rejectedCount").text(data.rejected || 0);
+        });
+    }
+
+    function showTable(status) {
+        if (status === "all") {
+            $(".offer-row").show();
+        } else {
+            $(".offer-row").hide();
+            $(".offer-row[data-status='" + status + "']").show();
+        }
+    }
+
+    setInterval(updateDashboardCounts, 5000);
+    $(document).ready(function () {
+        updateDashboardCounts();
+        showTable("all"); // Default view
+    });
+</script>

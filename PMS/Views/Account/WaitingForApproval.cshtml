@@ -1,0 +1,20 @@
+﻿
+@model PMS.Areas.Identity.Data.ApplicationUser
+
+<h2>Waiting for Approval</h2>
+
+@if (!string.IsNullOrEmpty(ViewBag.RejectionMessage))
+{
+    <div class="alert alert-danger">
+        <strong>Rejected:</strong> @ViewBag.RejectionMessage
+    </div>
+
+    <!-- Resubmit Documents Button -->
+    <a asp-action="ResubmitDocuments" class="btn btn-primary">Resubmit Documents</a>
+}
+else
+{
+    <div class="alert alert-warning">
+        Your documents are under review. Please wait for admin approval.
+    </div>
+}

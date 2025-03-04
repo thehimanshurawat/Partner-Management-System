@@ -1,0 +1,80 @@
+﻿@page
+@model LoginModel
+
+@{
+    ViewData["Title"] = "Log in";
+}
+
+<section class="vh-80" style="background-color: #fff; position:absolute; width:80%; top:110px;">
+    <div class="container h-80">
+        <div class="row d-flex justify-content-center align-items-center h-80">
+            <div class="col-lg-12 col-xl-11">
+                <div class="card text-black" style="border-radius: 25px;">
+                    <div class="card-body p-md-5">
+                        <div class="row justify-content-center">
+                            <div class="col-md-10 col-lg-6 col-xl-5 order-2 order-lg-1">
+                                <p class="text-center h1 fw-bold mb-4 mt-4">Log in</p>
+
+                                <!-- 🔹 Display Error/Warning Messages -->
+                                @if (TempData["ErrorMessage"] != null)
+                                {
+                                    <div class="alert alert-danger text-center">@TempData["ErrorMessage"]</div>
+                                }
+                                @if (TempData["WarningMessage"] != null)
+                                {
+                                    <div class="alert alert-warning text-center">@TempData["WarningMessage"]</div>
+                                }
+
+                                <form id="account" method="post" class="mx-1 mx-md-4">
+                                    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
+                                    <!-- 🔹 Email Input -->
+                                    <div class="d-flex flex-row align-items-center mb-3">
+                                        <i class="fas fa-envelope fa-lg me-3 fa-fw"></i>
+                                        <div class="form-outline flex-fill mb-0">
+                                            <label class="form-label" asp-for="Input.Email">Your Email</label>
+                                            <input asp-for="Input.Email" class="form-control" autocomplete="username" placeholder="name@example.com" />
+                                            <span asp-validation-for="Input.Email" class="text-danger"></span>
+                                        </div>
+                                    </div>
+
+                                    <!-- 🔹 Password Input -->
+                                    <div class="d-flex flex-row align-items-center mb-3">
+                                        <i class="fas fa-lock fa-lg me-3 fa-fw"></i>
+                                        <div class="form-outline flex-fill mb-0">
+                                            <label class="form-label" asp-for="Input.Password">Password</label>
+                                            <input asp-for="Input.Password" type="password" class="form-control" autocomplete="current-password" placeholder="Enter your password" />
+                                            <span asp-validation-for="Input.Password" class="text-danger"></span>
+                                        </div>
+                                    </div>
+
+                                    <!-- 🔹 Login Button -->
+                                    <div class="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
+                                        <button type="submit" class="btn btn-primary btn-lg">Log in</button>
+                                    </div>
+
+                                    <!-- 🔹 Additional Links -->
+                                    <div class="text-center">
+                                        <p>
+                                            <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register as a new user</a>
+                                        </p>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- 🔹 Right-Side Image -->
+                            <div class="col-md-10 col-lg-6 col-xl-7 d-flex align-items-center">
+                                <img src="https://cdni.iconscout.com/illustration/premium/thumb/man-looking-account-login-illustration-download-in-svg-png-gif-file-formats--viewing-checking-sign-credentials-cyber-security-pack-crime-illustrations-9290384.png"
+                                     class="img-fluid" alt="Login Illustration">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

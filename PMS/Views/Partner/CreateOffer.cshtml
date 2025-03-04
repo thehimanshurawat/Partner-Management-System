@@ -1,0 +1,67 @@
+﻿@model PMS.Models.Offer
+
+@{
+    ViewData["Title"] = "Create Offer";
+}
+<script src="https://cdn.tailwindcss.com"></script>
+
+<div class="flex flex-col md:flex-row bg-gray-100">
+
+    <!-- Main Content -->
+    <main class="flex-1 card p-6" style="margin-left:30px; position:absolute; width:80%; top:80px;border-radius: 25px;">
+        <h1 class="text-3xl font-bold mb-6">Create Offer</h1>
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+        }
+        
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <li>@error.ErrorMessage</li>
+                    }
+                </ul>
+            </div>
+        }
+
+        <form asp-action="CreateOffer" method="post" enctype="multipart/form-data" class="bg-white p-6 rounded-lg shadow-md">
+            <div class="mb-4">
+                <label class="block mb-2 font-semibold" for="OfferName">Offer Name</label>
+                <input type="text" class="w-full px-4 py-2 border rounded-lg" id="OfferName" name="OfferName" required />
+            </div>
+
+            <div class="mb-4">
+                <label class="block mb-2 font-semibold" for="Description">Description</label>
+                <textarea class="w-full px-4 py-2 border rounded-lg" id="Description" name="Description" required></textarea>
+            </div>
+
+            <div class="mb-4">
+                <label class="block mb-2 font-semibold" for="StartDate">Start Date</label>
+                <input type="date" class="w-full px-4 py-2 border rounded-lg" id="StartDate" name="StartDate" required />
+            </div>
+
+            <div class="mb-4">
+                <label class="block mb-2 font-semibold" for="EndDate">End Date</label>
+                <input type="date" class="w-full px-4 py-2 border rounded-lg" id="EndDate" name="EndDate" required />
+            </div>
+
+            <div class="mb-4">
+                <label class="block mb-2 font-semibold" for="Cost">Cost (₹)</label>
+                <input type="number" class="w-full px-4 py-2 border rounded-lg" id="Cost" name="Cost" step="0.01" required />
+            </div>
+
+            <input type="hidden" id="PartnerEmail" name="PartnerEmail" value="@User.Identity.Name" />
+            <div style="display:flex; justify-content:center;">
+                <button type="submit" class="px-6 bg-indigo-600 text-white mr-4 py-2 rounded-lg hover:bg-indigo-700">
+                    Submit Offer
+                </button>
+                <a href="@Url.Action("Dashboard", "Partner")" class=" bg-gray-300 rounded px-6 py-2 text-white-700 hover:bg-gray-400">Back</a>
+            </div>
+            
+        </form>
+    </main>
+</div>

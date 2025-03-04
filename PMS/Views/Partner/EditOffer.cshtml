@@ -1,0 +1,30 @@
+﻿@model PMS.Models.Offer
+<script src="https://cdn.tailwindcss.com"></script>
+@{
+    ViewData["Title"] = "Edit Offer";
+}
+
+<h2 class="text-2xl font-bold mb-4">Edit Offer</h2>
+
+<form asp-action="EditOffer" asp-controller="Partner" method="post" class="bg-white p-6 rounded-lg shadow-md">
+    <input type="hidden" name="OfferId" value="@Model.OfferId" />
+
+    <label class="block mb-2 font-semibold">Offer Name:</label>
+    <input type="text" name="OfferName" value="@Model.OfferName" class="w-full p-2 border rounded mb-3" required />
+
+    <label class="block mb-2 font-semibold">Description:</label>
+    <textarea name="Description" class="w-full p-2 border rounded mb-3">@Model.Description</textarea>
+
+    <label class="block mb-2 font-semibold">Start Date:</label>
+    <input type="date" name="StartDate" value="@Model.StartDate.ToString("yyyy-MM-dd")" class="w-full p-2 border rounded mb-3" required />
+
+    <label class="block mb-2 font-semibold">End Date:</label>
+    <input type="date" name="EndDate" value="@Model.EndDate.ToString("yyyy-MM-dd")" class="w-full p-2 border rounded mb-3" required />
+
+    <label class="block mb-2 font-semibold">Cost (₹):</label>
+    <input type="number" name="Cost" value="@Model.Cost" step="0.01" class="w-full p-2 border rounded mb-3" required />
+
+    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Save Changes</button>
+</form>
+
+<a href="@Url.Action("Dashboard", "Partner")" class="text-blue-500 mt-4 inline-block">🔙 Back to Dashboard</a>

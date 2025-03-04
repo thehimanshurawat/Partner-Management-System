@@ -1,0 +1,287 @@
+﻿@model IEnumerable<PMS.Models.Offer>
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <aside class="w-60 bg-gray-900 text-white hidden md:block fixed h-full" style="position:fixed; top:0px; margin-left:-112px; padding: 90px 20px 20px 20px;">
+            <h2 class="text-lg font-bold text-center mb-4">Admin Panel</h2>
+            <nav>
+                <ul class="space-y-3">
+                    <li><a href="/Admin/Dashboard" class="block px-1 py-2 hover:bg-gray-700 rounded">📊 Dashboard</a></li>
+                    <li><a href="/Admin/PartnersList" class="block px-1 py-2 hover:bg-gray-700 rounded">👥 Registered Partners</a></li>
+                    <li><a href="/Admin/PendingVerifications" class="block px-1 py-2 hover:bg-gray-700 rounded">⏳ Pending Approvals</a></li>
+                    <li><a href="/Admin/RejectedApplications" class="block px-1 py-2 hover:bg-gray-700 rounded">❌ Rejected Applications</a></li>
+                    <li><a href="@Url.Action("OffersList", "Admin")" class="block px-1 py-2 hover:bg-gray-700 rounded">📜 Manage Offers</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 p-6" style="margin-left:140px !important">
+            <h2 class="text-2xl font-bold mb-4"> Welcome to Admin DashBoard</h2>
+            
+            <div class="row">
+                <!-- Total Partners -->
+                <div class="col-md-4">
+                    <div class="card text-white bg-primary mb-3" id="totalPartnersCard" style="cursor: pointer;">
+                        <div class="card-header">Total Partners</div>
+                        <div class="card-body">
+                            <h5 class="card-title" id="totalPartners">0</h5>
+                            <p class="card-text">Registered Partners</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rejected Applications -->
+                <div class="col-md-4">
+                    <div class="card text-white bg-danger mb-3" id="rejectedApplicationsCard" style="cursor: pointer;">
+                        <div class="card-header">Rejected Applications</div>
+                        <div class="card-body">
+                            <h5 class="card-title" id="rejectedApplications">0</h5>
+                            <p class="card-text">Applications rejected by admin</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pending Approvals -->
+                <div class="col-md-4">
+                    <div class="card text-white bg-warning mb-3" id="pendingApprovalsCard" style="cursor: pointer;">
+                        <div class="card-header">Pending Approvals</div>
+                        <div class="card-body">
+                            <h5 class="card-title" id="pendingApprovals">0</h5>
+                            <p class="card-text">Partners waiting for approval</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!---      ---->
+            <div class="row">
+                <!-- All Offers -->
+                <div class="col-md-3">
+                    <div class="card text-white bg-info mb-3 offer-card" id="allOffersCard" style="cursor: pointer;">
+                        <div class="card-header">📜 All Offers</div>
+                        <div class="card-body">
+                            <h5 class="card-title" id="allOffersCount">0</h5>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Pending Offers -->
+                <div class="col-md-3">
+                    <div class="card text-white bg-warning mb-3 offer-card" id="pendingOffersCard" style="cursor: pointer;">
+                        <div class="card-header">⏳ Pending Offers</div>
+                        <div class="card-body">
+                            <h5 class="card-title" id="pendingOffersCount">0</h5>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Approved Offers -->
+                <div class="col-md-3">
+                    <div class="card text-white bg-success mb-3 offer-card" id="approvedOffersCard" style="cursor: pointer;">
+                        <div class="card-header">✔️ Approved Offers</div>
+                        <div class="card-body">
+                            <h5 class="card-title" id="approvedOffersCount">0</h5>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rejected Offers -->
+                <div class="col-md-3">
+                    <div class="card text-white bg-danger mb-3 offer-card" id="rejectedOffersCard" style="cursor: pointer;">
+                        <div class="card-header">❌ Rejected Offers</div>
+                        <div class="card-body">
+                            <h5 class="card-title" id="rejectedOffersCount">0</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Offer Tables -->
+            <div id="offerTables">
+                <h2 class="text-2xl font-semibold mt-8 mb-4" id="tableTitle">All Offers</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full bg-white shadow-md rounded-lg">
+                        <thead>
+                            
+                            <tr class="bg-indigo-600 text-white">
+                                <th class="p-3 text-left">Offer Name</th>
+                                <th class="p-3 text-left">Partner Email</th>
+                                <th class="p-3 text-left" style="width:120px;">Start Date</th>
+                                <th class="p-3 text-left" style=" width:120px;">End Date</th>
+                                <th class="p-3 text-left">Description</th>
+                                
+                            </tr>
+                        </thead>
+                        <tbody id="offersTableBody">
+                            <!-- Offers will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+             
+        </main>
+        
+    </div>
+</div>
+
+<style>
+    .sidebar {
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+        padding-top: 10px;
+    }
+
+    .nav-link:hover {
+        background-color: #495057;
+        border-radius: 5px;
+    }
+</style>
+
+<script>
+    document.getElementById('totalPartnersCard').addEventListener('click', function () {
+        window.location.href = '/Admin/PartnersList';
+    });
+
+    document.getElementById('pendingApprovalsCard').addEventListener('click', function () {
+        window.location.href = '/Admin/PendingVerifications';
+    });
+
+    document.getElementById('rejectedApplicationsCard').addEventListener('click', function () {
+        window.location.href = '/Admin/RejectedApplications';
+    });
+
+    function fetchDashboardData() {
+        fetch('/Admin/GetPendingVerificationsCount')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('totalPartners').innerText = data.totalPartners ?? 0;
+                document.getElementById('pendingApprovals').innerText = data.pendingApprovals ?? 0;
+                document.getElementById('rejectedApplications').innerText = data.rejectedApplications ?? 0;
+            })
+            .catch(error => console.error('Error fetching dashboard data:', error));
+    }
+
+    setInterval(fetchDashboardData, 5000);
+    fetchDashboardData();
+
+    function updateOfferCounts() {
+        $.ajax({
+            url: "/Admin/GetOfferCounts",
+            type: "GET",
+            success: function (data) {
+                console.log("Offer counts updated:", data);
+                $("#allOffersCount").text(data.all ?? 0);
+                $("#pendingOffersCount").text(data.pending ?? 0);
+                $("#approvedOffersCount").text(data.approved ?? 0);
+                $("#rejectedOffersCount").text(data.rejected ?? 0);
+            },
+            error: function (xhr, status, error) {
+                console.error("Error fetching offer counts:", error);
+            }
+        });
+    }
+
+         function loadOffers(status = "All") {
+        $("#offersTableBody").html('<tr><td colspan="5" class="text-center">Loading...</td></tr>');
+
+        $.get("/Admin/GetOffersByStatus?status=" + status, function (data) {
+            $("#offersTableBody").empty();
+
+            if (data.length === 0) {
+                $("#offersTableBody").append('<tr><td colspan="5" class="text-center">No offers found</td></tr>');
+            } else {
+                data.forEach(offer => {
+                    $("#offersTableBody").append(`
+                        <tr class="border-b">
+                            <td class="p-3">${offer.offerName ?? 'N/A'}</td>
+                            <td class="p-3">${offer.partnerEmail ?? 'N/A'}</td>
+                            <td class="p-3">${offer.startDate ? offer.startDate.split("T")[0] : 'N/A'}</td>
+                            <td class="p-3">${offer.endDate ? offer.endDate.split("T")[0] : 'N/A'}</td>
+                            <td class="p-3">${offer.description ?? 'N/A'}</td>
+                        </tr>
+                    `);
+                });
+            }
+        });
+    }
+
+    // Approve Offer (Disable Approve Button & Reject Button)
+    $(document).on("click", ".approve-btn", function () {
+        let offerId = $(this).data("id");
+        $.post("/Admin/ApproveOffer", { offerId: offerId }, function () {
+            loadOffers(); // Reload offers without showing an alert
+        });
+    });
+
+    // Reject Offer (Disable Reject Button & Approve Button & Save Reason)
+    $(document).on("click", ".reject-btn", function () {
+        let offerId = $(this).data("id");
+        let reason = $(`.rejection-reason[data-id="${offerId}"]`).val().trim();
+
+        if (reason === "") return; // Prevent rejection without a reason
+
+        $.post("/Admin/RejectOffer", { offerId: offerId, reason: reason }, function () {
+            loadOffers(); // Reload offers without showing an alert
+        });
+    });
+
+    // Event Listeners for Offer Cards
+        $(".offer-card").click(function () {
+        let status = "All"; // Default to All Offers
+
+        if (this.id === "pendingOffersCard") {
+            status = "Pending";
+            $("#tableTitle").text("Pending Offers");
+        } else if (this.id === "approvedOffersCard") {
+            status = "Approved";
+            $("#tableTitle").text("Approved Offers");
+        } else if (this.id === "rejectedOffersCard") {
+            status = "Rejected";
+            $("#tableTitle").text("Rejected Offers");
+        } else if (this.id === "allOffersCard") {
+            status = "All"; // ✅ Fix: Now it correctly loads all offers
+            $("#tableTitle").text("All Offers");
+        }
+
+        loadOffers(status);
+    });
+
+
+    $(document).on("click", ".reject-btn", function () {
+        let offerId = $(this).data("id");
+        let reason = prompt("Enter rejection reason:");
+        if (reason) {
+            $.post("/Admin/RejectOffer", { offerId: offerId, reason: reason }, function () {
+                alert("Offer rejected successfully!");
+                loadOffers();
+            }).fail(() => alert("Error rejecting offer."));
+        } else {
+            alert("Rejection reason is required.");
+        }
+    });
+
+    // Event Listener for "All Offers" Button
+    $("#allOffersBtn").click(function () {
+        $("#tableTitle").text("All Offers");
+        loadOffers("All");
+    });
+
+    // Load all offers by default on page load
+    loadOffers("All");
+
+    setInterval(updateOfferCounts, 100);
+    updateOfferCounts();
+    loadOffers("All");
+</script>
+
+

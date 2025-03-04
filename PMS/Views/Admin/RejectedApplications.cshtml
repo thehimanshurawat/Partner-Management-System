@@ -1,0 +1,59 @@
+﻿@model List<PMS.Areas.Identity.Data.ApplicationUser>
+
+@{
+    ViewData["Title"] = "Rejected Applications";
+}
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<div class="flex h-screen">
+    <!-- Sidebar -->
+    <aside class="w-60 bg-gray-900 text-white hidden md:block fixed h-full" style="position:fixed; top:0px; margin-left:-112px; padding: 90px 20px 20px 20px;">
+        <h2 class="text-lg font-bold text-center mb-4">Admin Panel</h2>
+        <nav>
+            <ul class="space-y-3">
+                <li><a href="/Admin/Dashboard" class="block px-1 py-2 hover:bg-gray-700 rounded">📊 Dashboard</a></li>
+                <li><a href="/Admin/PartnersList" class="block px-1 py-2 hover:bg-gray-700 rounded">👥 Registered Partners</a></li>
+                <li><a href="/Admin/PendingVerifications" class="block px-1 py-2 hover:bg-gray-700 rounded">⏳ Pending Approvals</a></li>
+                <li><a href="/Admin/RejectedApplications" class="block px-1 py-2 hover:bg-gray-700 rounded">❌ Rejected Applications</a></li>
+                <li><a href="@Url.Action("OffersList", "Admin")" class="block px-1 py-2 hover:bg-gray-700 rounded">📜 Manage Offers</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-6" style="margin-left:150px;position:absolute; top:50px; width:80%;">
+        <h2 class="text-2xl font-bold mb-4">Rejected Applications</h2>
+
+        <div class="overflow-auto">
+            <table class="w-full border border-gray-200 rounded-lg mb-10 shadow-md">
+
+                <thead class="bg-gray-800 text-white">
+                    <tr>
+                        <th class="p-3">Name</th>
+                        <th class="p-3">Email</th>
+                        <th class="p-3">Rejection Reason</th>
+                        <th class="p-3">Action</th> <!-- Added Action Column -->
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model)
+                    {
+                        <tr class="border-b">
+                            <td class="p-3">@user.UserName</td>
+                            <td class="p-3">@user.Email</td>
+                            <td class="p-3">@user.RejectionMessage</td>
+                            <td class="p-3">
+                                <!-- Move to Pending Button -->
+                                <form asp-action="MoveToPendingVerification" method="post" class="d-inline">
+                                    <input type="hidden" name="userId" value="@user.Id" />
+                                    <button type="submit" class="btn btn-warning">Move to Pending</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>

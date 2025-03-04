@@ -1,0 +1,89 @@
+﻿@model IEnumerable<PMS.Models.Offer>
+
+@{
+    ViewData["Title"] = "Manage Offers";
+}
+<script src="https://cdn.tailwindcss.com"></script>
+
+<div class="flex h-screen">
+    <!-- Sidebar -->
+    <aside class="w-60 bg-gray-900 text-white hidden md:block fixed h-full" style="position:fixed; top:0px; margin-left:-112px; padding: 90px 20px 20px 20px;">
+        <h2 class="text-lg font-bold text-center mb-4">Admin Panel</h2>
+        <nav>
+            <ul class="space-y-3">
+                <li><a href="/Admin/Dashboard" class="block px-1 py-2 hover:bg-gray-700 rounded">📊 Dashboard</a></li>
+                <li><a href="/Admin/PartnersList" class="block px-1 py-2 hover:bg-gray-700 rounded">👥 Registered Partners</a></li>
+                <li><a href="/Admin/PendingVerifications" class="block px-1 py-2 hover:bg-gray-700 rounded">⏳ Pending Approvals</a></li>
+                <li><a href="/Admin/RejectedApplications" class="block px-1 py-2 hover:bg-gray-700 rounded">❌ Rejected Applications</a></li>
+                <li><a href="@Url.Action("OffersList", "Admin")" class="block px-1 py-2 hover:bg-gray-700 rounded">📜 Manage Offers</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-6" style="margin-left:150px;position:absolute; top:50px; width:80%;">
+        <h2 class="text-2xl font-bold mb-4">Manage Offers</h2>
+
+        <div class="overflow-auto">
+            <table class="border border-gray-200 rounded-lg mb-10 shadow-md w-full">
+                <thead class="bg-gray-800 text-white">
+                    <tr>
+                        <th class="p-2">Offer Name</th>
+                        <th class="p-2">Partner Email</th>
+                        <th class="p-2" style="width:100px;">Start Date</th>
+                        <th class="p-2">End Date</th>
+                        <th class="p-2">Description</th>
+                        
+                        <th class="p-2">Status</th>
+                        <th class="p-2">Message</th>
+                        <th class="p-2">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var offer in Model.Reverse()) // ✅ Reverse order to show newest first
+                    {
+                        <tr class="border-b">
+                            <td class="p-2">@offer.OfferName</td>
+                            <td class="p-2">@offer.Partner?.Email</td>
+                            <td class="p-2" style="width:90px;">@offer.StartDate.ToShortDateString()</td>
+                            <td class="p-2" style="width:90px;">@offer.EndDate.ToShortDateString()</td>
+                            <td class="p-2">@offer.Description</td>
+                            
+                            <td class="p-2">
+                                @if (offer.Status == OfferStatus.Approved)
+                                {
+                                    <span class="badge bg-success">Approved</span>
+                                }
+                                else if (offer.Status == OfferStatus.Rejected)
+                                {
+                                    <span class="badge bg-danger">Rejected</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning">Pending</span>
+                                }
+                            </td>
+                            <td class="p-2">@offer.Message</td>
+                            <td class="p-2">
+                                <form asp-action="ApproveOffer" method="post" class="inline-block">
+                                    <input type="hidden" name="offerId" value="@offer.OfferId" />
+                                    <button type="submit" class="btn btn-success" @(offer.Status == OfferStatus.Approved ? "disabled" : "")>
+                                        ✅ Approve
+                                    </button>
+                                </form>
+
+                                <form asp-action="RejectOffer" method="post" class="inline-block mt-1">
+                                    <input type="hidden" name="offerId" value="@offer.OfferId" />
+                                    <input type="text" name="message" placeholder="Enter reason" required class="form-control mb-1" />
+                                    <button type="submit" class="btn btn-danger" @(offer.Status == OfferStatus.Rejected ? "disabled" : "")>
+                                        ❌ Reject
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
